@@ -12,15 +12,15 @@
 <body>
     <h1 class="text-center">Welcome to my home page</h1>
     <div class="d-flex justify-content-center gap-2">
-        <button type="button" class="btn btn-primary">Primary</button>
+        <a type="button" href="/login" class="btn btn-primary">Login</a>
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                 aria-expanded="false">
                 Register
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Customer</a></li>
-                <li><a class="dropdown-item" href="#">Professional</a></li>
+                <li><a class="dropdown-item" href="/register?role=customer">Customer</a></li>
+                <li><a class="dropdown-item" href="/register?role=professional">Professional</a></li>
                 
             </ul>
         </div>

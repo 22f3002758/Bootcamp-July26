@@ -1,16 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
 
-class Admin(db.Model):
+class Admin(db.Model,UserMixin):
     
     id = db.Column(db.Integer, primary_key =True , autoincrement=True)
     email = db.Column(db.String, unique=True , nullable=False)
     password = db.Column(db.String , nullable=False)
+    def get_id(self):
+        return str(self.email)
     
 
-class Customer(db.Model):
+class Customer(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key =True , autoincrement=True)
     email = db.Column(db.String, unique=True , nullable=False)
     password = db.Column(db.String , nullable=False)
@@ -19,10 +22,12 @@ class Customer(db.Model):
     mobile = db.Column(db.String, nullable=False)
     status = db.Column(db.String, nullable=False)
     bookings = db.relationship("Booking", backref="customer",cascade="all, delete-orphan", lazy=True)
+    def get_id(self):
+        return str(self.email)
     
 
 
-class Professional(db.Model): # table name professional
+class Professional(db.Model,UserMixin): # table name professional
     id = db.Column(db.Integer, primary_key =True , autoincrement=True)
     email = db.Column(db.String, unique=True , nullable=False)
     password = db.Column(db.String , nullable=False)
@@ -34,7 +39,8 @@ class Professional(db.Model): # table name professional
     resume_url = db.Column(db.String)
     packages = db.relationship("Package", backref="professional",cascade="all, delete-orphan", lazy=True) # backref is used to access parent table information from child table
     bookings = db.relationship("Booking", backref="professional",cascade="all, delete-orphan", lazy=True)
-    
+    def get_id(self):
+        return str(self.email)
     
 class Package(db.Model):# table name package
     id = db.Column(db.Integer, primary_key =True , autoincrement=True)
