@@ -2,6 +2,7 @@ from flask import current_app as app
 from flask import request, render_template,redirect
 from .models import*
 from flask_login import login_user, logout_user,login_required,current_user
+from sqlalchemy import or_
 
 @app.route('/')
 def home():
@@ -40,7 +41,7 @@ def register():
         if prof:
             return "Professional already exist!"
         else:
-            newprof=Professional(name=fname,email=femail, password=fpwd,address=fadd,mobile=fmobile,experience=fexp,status='registered',resume="#")
+            newprof=Professional(name=fname,email=femail, password=fpwd,address=fadd,mobile=fmobile,experience=fexp,status='Registered',resume="#")
             db.session.add(newprof)
             db.session.commit() 
         return redirect("/login")    
@@ -79,7 +80,62 @@ def login():
 @app.route('/admin/dashboard',methods=['GET','POST'])  
 @login_required
 def admin_dash():
-    return f"Welcome to admin dashboard{current_user.email}"     
+    profs=db.session.query(Professional).all()
+    customers=db.session.query(Customer).all()
+    return render_template("admin/dashboard.html",profs=profs,customers=customers)    
+
+@app.route("/admin/professional/<string:action>/<int:prof_id>")
+def approve_professional(action,prof_id):
+    prof=db.session.query(Professional).filter_by(id=prof_id).first()
+    if prof:
+        if action=="Accept" and prof.status=='Registered':
+            prof.status='Active'
+            db.session.commit()
+        elif action=="Reject" and prof.status=='Registered':
+            prof.status='Rejected'
+            db.session.commit()
+        elif action=="Flag" and prof.status=='Active':
+            prof.status='Flagged'
+            db.session.commit()
+        elif action=="Unflag" and prof.status=='Flagged':
+            prof.status='Active'
+            db.session.commit()
+        else:
+            return "invalid action or status"    
+    else:
+        return "Professional not found"
+    return redirect("/admin/dashboard")    
+
+@app.route("/admin/customer/<string:action>/<int:cust_id>")
+def approve_customer(action,cust_id):
+    cust=db.session.query(Customer).filter_by(id=cust_id).first()
+    if cust:
+        if action=="Flag" and cust.status=='Active':
+            cust.status='Flagged'
+            db.session.commit()
+        elif action=="Unflag" and cust.status=='Flagged':
+            cust.status='Active'
+            db.session.commit()
+        else:
+            return "invalid action or status"    
+    else:
+        return "Customer not found"
+    return redirect("/admin/dashboard")   
+
+@app.route("/admin/search", methods=["GET","POST"])
+def search_admin():
+    if request.method=="GET":
+        return render_template("admin/search.html")
+    elif request.method=="POST":
+        qtype=request.form.get("query_type")
+        query=request.form.get("query")
+        if qtype=="customer":
+            custs=db.session.query(Customer).filter(or_(Customer.name.contains(query),Customer.email.contains(query))).all()
+            return render_template("/admin/search.html", customers=custs,query_type=qtype)
+        if qtype=="professional":
+            profs=db.session.query(Professional).filter(or_(Professional.name.contains(query),Professional.email.contains(query))).all()
+            return render_template("/admin/search.html", profs=profs,query_type=qtype)
+
 
 @app.route('/professional/dashboard',methods=['GET','POST'])  
 @login_required
