@@ -3,6 +3,7 @@ from flask import request, render_template,redirect
 from .models import*
 from flask_login import login_user, logout_user,login_required,current_user
 from sqlalchemy import or_
+from datetime import datetime
 
 @app.route('/')
 def home():
@@ -140,12 +141,65 @@ def search_admin():
 @app.route('/professional/dashboard',methods=['GET','POST'])  
 @login_required
 def prof_dash():
-    return "Welcome to professional dashboard"   
+    packages=db.session.query(Package).filter_by(prof_id=current_user.id).all()
+    bookings=current_user.bookings
+    return render_template("professional/dashboard.html",packages=packages,bookings=bookings)   
+
+@app.route('/professional/add_package',methods=['GET','POST'])
+@login_required
+def addpackage():
+    title=request.form.get("title")
+    desc=request.form.get("description")
+    price=request.form.get("price")
+    start_date=datetime.strptime(request.form.get("start_date"),"%Y-%m-%d").date()
+    end_date=datetime.strptime(request.form.get("end_date"),"%Y-%m-%d").date()
+    pack=db.session.query(Package).filter_by(title=title).first()
+    if pack:
+        return "Package alrewady exist"
+    else:
+        newpack=Package(title=title,description=desc,price=price,start_date=start_date,end_date=end_date,prof_id=current_user.id,status='Active')
+        db.session.add(newpack)
+        db.session.commit()
+    return redirect("/professional/dashboard")
+
+@app.route('/professional/edit_package/<int:pack_id>',methods=['GET','POST'])
+@login_required
+def editpackage(pack_id):
+    title=request.form.get("title")
+    desc=request.form.get("description")
+    price=request.form.get("price")
+    start_date=datetime.strptime(request.form.get("start_date"),"%Y-%m-%d").date()
+    end_date=datetime.strptime(request.form.get("end_date"),"%Y-%m-%d").date()
+    pack=db.session.query(Package).filter_by(id=pack_id).first()
+    if title:
+        pack.title=title
+    if desc:
+        pack.description=desc
+    if price:
+        pack.price=price
+    if start_date:
+        pack.start_date=start_date
+    if end_date:
+            pack.start_date=end_date
+            db.session.commit()
+            return redirect("/professional/dashboard")
+
+    
+@app.route('/professional/delete/<int:pack_id>',methods=['GET','POST'])
+@login_required
+def delete_package(pack_id):
+    pack=db.session.query(Package).filter_by(id=pack_id).first()
+    if pack:
+        db.session.delete(pack)
+        db.session.commit()
+        return redirect("/professional/dashboard")
+
 
 @app.route('/customer/dashboard',methods=['GET','POST'])  
 @login_required
 def cust_dash():
     
+
     return f"Welcome to customer dashboard{current_user.email}"    
 
 
