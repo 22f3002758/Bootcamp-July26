@@ -137,13 +137,19 @@ def search_admin():
             profs=db.session.query(Professional).filter(or_(Professional.name.contains(query),Professional.email.contains(query))).all()
             return render_template("/admin/search.html", profs=profs,query_type=qtype)
 
+@app.route("/admin/viewprofessional/<int:prof_id>", methods=["GET","POST"])
+@login_required
+def view_prf(prof_id):      
+    packs=db.session.query(Package).filter_by(prof_id=prof_id).all()
+    bookings=db.session.query(Booking).filter_by(prof_id=prof_id).all()
+    return render_template("admin/viewprofessional.html",packages=packs,bookings=bookings)
 
 @app.route('/professional/dashboard',methods=['GET','POST'])  
 @login_required
 def prof_dash():
     packages=db.session.query(Package).filter_by(prof_id=current_user.id).all()
     bookings=current_user.bookings
-    return render_template("professional/dashboard.html",packages=packages,bookings=bookings)   
+    return render_template("professional/dashboard.html",packages=packages,bookings=bookings,cu=current_user)   
 
 @app.route('/professional/add_package',methods=['GET','POST'])
 @login_required
@@ -193,13 +199,51 @@ def delete_package(pack_id):
         db.session.delete(pack)
         db.session.commit()
         return redirect("/professional/dashboard")
+@app.route('/professional/<string:action>/<int:booking_id>')    
+@login_required
+def prof_booking(action,booking_id):
+    booking=db.session.query(Booking).filter_by(id=booking_id).first()
+    if booking:
+        if action=='Accept' and booking.status=="Requested":
+            booking.status='Accepted'
+        elif action=='Reject' and booking.status=="Requested":
+            booking.status='Rejected'
+        db.session.commit()
+    return redirect("/professional/dashboard")                   
+
 
 
 @app.route('/customer/dashboard',methods=['GET','POST'])  
 @login_required
 def cust_dash():
-    
+    packs=db.session.query(Package).filter_by(status='Active').all()
+    packages=[]
+    for pack in packs:
+        if pack.start_date<=datetime.now().date()<=pack.end_date:
+            packages.append(pack)
+    bookings=current_user.bookings
+    return render_template("customer/dashboard.html",packages=packages,bookings=bookings,cu=current_user)    
 
-    return f"Welcome to customer dashboard{current_user.email}"    
 
+@app.route('/customer/book/<int:pack_id>',methods=['GET','POST'])  
+@login_required
+def book_pack(pack_id):
+    pack=db.session.query(Package).filter_by(id=pack_id).first()
+    date=request.form.get('date')
+    time=request.form.get('time')
+    if pack and pack.status=='Active':
+        if pack.start_date<=datetime.strptime(date,'%Y-%m-%d').date()<=pack.end_date:
+            newbooking=Booking(cust_id=current_user.id,pack_id=pack.id,prof_id=pack.prof_id,status='Requested',
+                               date=datetime.strptime(date,'%Y-%m-%d').date(),start_time=datetime.strptime(time,'%H:%M').time(),total_price=0)
+            db.session.add(newbooking)
+            db.session.commit()
+        return redirect("/customer/dashboard") 
+    else:
+        return "Package is not available."
+       
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect('/login')
 

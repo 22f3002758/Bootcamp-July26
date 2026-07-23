@@ -65,56 +65,7 @@
             <div class="d-flex d-inline ">
                 <h4> Packages</h4>
 
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary ms-auto    " data-bs-toggle="modal"
-                    data-bs-target="#exampleModal">
-                    Add Package
-                </button>
-
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Package</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="POST" action="/professional/add_package">
-                                    <div class="mb-3">
-                                        <label for="exampleTitle" class="form-label">Title</label>
-                                        <input type="text" class="form-control" id="exampleTitle"
-                                            aria-describedby="emailHelp" required name="title">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampledesc" class="form-label">Description</label>
-                                        <input type="text" class="form-control" id="exampledesc" required
-                                            name="description">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleprice" class="form-label">price</label>
-                                        <input type="text" class="form-control" id="exampleprice" required name="price">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="examplesd" class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" id="examplesd" required
-                                            name="start_date">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleed" class="form-label">End Date</label>
-                                        <input type="date" class="form-control" id="exampleed" required name="end_date">
-                                    </div>
-
-
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -132,7 +83,7 @@
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-primary ms-auto    " data-bs-toggle="modal"
                             data-bs-target="#editpack{{package.id}}">
-                            <i class="bi bi-pen"></i>
+                            Book
                         </button>
 
                         <!-- Modal -->
@@ -141,38 +92,24 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Package</h1>
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Book Package</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form method="POST" action="/professional/edit_package/{{package.id}}">
+                                        <form method="POST" action="/customer/book/{{package.id}}">
                                             <div class="mb-3">
-                                                <label for="exampleTitle" class="form-label">Title</label>
-                                                <input type="text" class="form-control" id="exampleTitle"
-                                                    aria-describedby="emailHelp" required name="title"
-                                                    value="{{package.title}}">
+                                                <label for="exampleTitle" class="form-label">Date</label>
+                                                <input type="date" class="form-control" id="exampleTitle"
+                                                    aria-describedby="emailHelp" required name="date"
+                                                    min="{{package.start_date}}" max="{{package.end_date}}">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="exampledesc" class="form-label">Description</label>
-                                                <input type="text" class="form-control" id="exampledesc" required
-                                                    name="description" value="{{package.description}}">
+                                                <label for="exampledesc" class="form-label">Time</label>
+                                                <input type="time" class="form-control" id="exampledesc" required
+                                                    name="time" >
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="exampleprice" class="form-label">price</label>
-                                                <input type="text" class="form-control" id="exampleprice" required
-                                                    name="price" value="{{package.price}}">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="examplesd" class="form-label">Start Date</label>
-                                                <input type="date" class="form-control" id="examplesd" required
-                                                    name="start_date" value="{{package.start_date}}">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="exampleed" class="form-label">End Date</label>
-                                                <input type="date" class="form-control" id="exampleed" required
-                                                    name="end_date" value="{{package.end_date}}">
-                                            </div>
+                                            
 
 
                                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -182,8 +119,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a type="button" href="/professional/delete/{{package.id}}" class="btn btn-primary"><i
-                                class="bi bi-trash"></i></a>
+                        
                     </div>
                 </div>
             </div>
@@ -219,9 +155,10 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Package</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">Customer Email</th>
-                                <th scope="col">Price</th>
+                                <th scope="col">Package Price</th>
+                                <th scope="col">Professional Name</th>
+                                <th scope="col">Professional Email</th>
+                                
                                 <th scope="col">Date</th>
                                 <th scope="col">Time</th>
                                 <th scope="col">Status</th>
@@ -233,9 +170,10 @@
                             <tr>
                                 <th scope="row">1</th>
                                 <td>{{booking.package.title}}</td>
-                                <td>{{booking.customer.name}}</td>
-                                <td>{{booking.customer.email}}</td>
                                 <td>{{booking.package.price}}</td>
+                                <td>{{booking.professional.name}}</td>
+                                <td>{{booking.professional.email}}</td>
+                                
                                 <td>{{booking.date}}</td>
                                 <td>{{booking.start_time}}</td>
                                 <td>{{booking.status}}</td>
@@ -252,13 +190,13 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Package</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">Customer Email</th>
-                                <th scope="col">Price</th>
+                                <th scope="col">Package Price</th>
+                                <th scope="col">Professional Name</th>
+                                <th scope="col">Professional Email</th>
+                                
                                 <th scope="col">Date</th>
                                 <th scope="col">Time</th>
                                 <th scope="col">Status</th>
-                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -267,19 +205,13 @@
                             <tr>
                                 <th scope="row">1</th>
                                 <td>{{booking.package.title}}</td>
-                                <td>{{booking.customer.name}}</td>
-                                <td>{{booking.customer.email}}</td>
                                 <td>{{booking.package.price}}</td>
+                                <td>{{booking.professional.name}}</td>
+                                <td>{{booking.professional.email}}</td>
+                                
                                 <td>{{booking.date}}</td>
                                 <td>{{booking.start_time}}</td>
                                 <td>{{booking.status}}</td>
-                                <td>
-                                    <a type="button" href="/professional/Accept/{{booking.id}}"
-                                        class="btn btn-primary">Accept</button>
-                                        <a type="button" href="/professional/Reject/{{booking.id}}"
-                                            class="btn btn-primary">Reject</button>
-
-                                </td>
                             </tr>
                             {% endif %}
                             {% endfor %}
@@ -294,9 +226,10 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Package</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">Customer Email</th>
-                                <th scope="col">Price</th>
+                                <th scope="col">Package Price</th>
+                                <th scope="col">Professional Name</th>
+                                <th scope="col">Professional Email</th>
+                                
                                 <th scope="col">Date</th>
                                 <th scope="col">Time</th>
                                 <th scope="col">Status</th>
@@ -308,9 +241,10 @@
                             <tr>
                                 <th scope="row">1</th>
                                 <td>{{booking.package.title}}</td>
-                                <td>{{booking.customer.name}}</td>
-                                <td>{{booking.customer.email}}</td>
                                 <td>{{booking.package.price}}</td>
+                                <td>{{booking.professional.name}}</td>
+                                <td>{{booking.professional.email}}</td>
+                                
                                 <td>{{booking.date}}</td>
                                 <td>{{booking.start_time}}</td>
                                 <td>{{booking.status}}</td>
